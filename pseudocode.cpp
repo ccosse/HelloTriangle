@@ -183,7 +183,7 @@ void DoVulkanRendering()
   // set the viewport
   vkCmdSetViewport(cmd, 1, &viewport);//9 @ createGraphicsPipeline
   // draw the triangle
-  vkCmdDraw(cmd, 3, 1, 0, 0);//14 @drawFrame
+  vkCmdDraw(cmd, 3, 1, 0, 0);//14 @renderPass::drawFrame
   vkCmdEndRenderPass(cmd);
   vkEndCommandBuffer(cmd);
 
