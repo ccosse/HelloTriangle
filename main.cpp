@@ -835,6 +835,8 @@ private:
         allocInfo.commandBufferCount = (uint32_t) commandBuffers.size();
 
         // &commandBuffers -> commandBuffers.data() ... could be the "display killer"
+        //extended_dynamic_state2 of Vulkan-Samples uses cmdBuffer1, cmdBuffer2, ... not vector ... my gpu won't even run this one
+        // Required device extension VK_EXT_extended_dynamic_state2 not available, cannot run
         if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate command buffers!");
         }
