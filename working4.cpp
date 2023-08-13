@@ -20,7 +20,7 @@
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
-const int MAX_FRAMES_IN_FLIGHT = 5;
+const int MAX_FRAMES_IN_FLIGHT = 2;
 
 struct Vertex {
     glm::vec2 pos;
@@ -137,6 +137,7 @@ private:
     std::vector<VkFence> inFlightFences;//sync @cpu for next frame
     bool framebufferResized = false;
     uint32_t currentFrame = 0;
+    int t0 = clock();
 
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
         auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
@@ -929,11 +930,17 @@ private:
 
         void* data;
         vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-            srand(time(NULL));
-            float x=(0.5+(1-2*(float)rand()/(float)RAND_MAX));
-            float y=(0.-(float)rand()/(float)RAND_MAX);
-            std::cout<<"x="<<x<<" y="<<y<<std::endl;
-            vertices[0]={{x, y}, {1.0f, 1.0f, 1.0f}};
+            srand(clock());
+            float x=(       0.2*sin(.01*((float)clock()-(float)t0)/(float)t0));
+            float y=(-0.5 + 0.2*cos(.01*((float)clock()-(float)t0)/(float)t0));
+            vertices[0]={
+                {x, y}, 
+                {
+                    0.5+0.5*sin(.02*((float)clock()-(float)t0)/(float)t0), 
+                    0.5+0.5*sin(.01*((float)clock()-(float)t0)/(float)t0), 
+                    0.5+0.5*cos(.02*((float)clock()-(float)t0)/(float)t0) + acos(-1.)/3.
+                }
+            };
             memcpy(data, vertices.data(), (size_t) bufferInfo.size);
         vkUnmapMemory(device, vertexBufferMemory);
         //below @recordCommandBuffer() we will bind the vertextBuffer
@@ -1050,7 +1057,8 @@ private:
         vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
         //ready to record the command buffer
-        std::cout<<"Tick "<<currentFrame<<std::endl;
+        std::cout<<"Tick "<<clock()<<std::endl;
+        createVertexBuffer();
         vkResetCommandBuffer(commandBuffers[currentFrame],  0);
         recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 
