@@ -907,7 +907,7 @@ private:
             }
         }
         throw std::runtime_error("failed to find suitable memory type!");
-    }
+    }//11.2
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
         VkBufferCreateInfo bufferInfo{};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -932,7 +932,7 @@ private:
         }
 
         vkBindBufferMemory(device, buffer, bufferMemory, 0);
-    }
+    }//11.3
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -966,7 +966,7 @@ private:
 
         // cleanup the cmd buffer used for the xfer
         vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
-    }
+    }//11.4
     void createVertexBuffer() {
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
         VkBuffer stagingBuffer;
@@ -979,6 +979,19 @@ private:
         );
         void* data;
         vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+            /*
+            srand(clock());
+            float x=(       0.2*sin(.01*((float)clock()-(float)t0)/(float)t0));
+            float y=(-0.5 + 0.2*cos(.01*((float)clock()-(float)t0)/(float)t0));
+            vertices[0]={
+                {x, y}, 
+                {
+                    0.5+0.5*sin(.02*((float)clock()-(float)t0)/(float)t0), 
+                    0.5+0.5*sin(.01*((float)clock()-(float)t0)/(float)t0), 
+                    0.5+0.5*cos(.02*((float)clock()-(float)t0)/(float)t0) + acos(-1.)/3.
+                }
+            };
+            */
             memcpy(data, vertices.data(), (size_t) bufferSize);
         vkUnmapMemory(device, stagingBufferMemory);
         //below @recordCommandBuffer() we will bind the vertextBuffer
