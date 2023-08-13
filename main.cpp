@@ -5,12 +5,13 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
-#include <cstdlib>
 #include <cstring>
 #include <vector>
 #include <optional>
 #include <set>
 
+#include <cstdlib>
+#include <ctime>
 #include <cstdint> // Necessary for uint32_t
 #include <limits> // Necessary for std::numeric_limits
 #include <algorithm> // Necessary for std::clamp
@@ -48,7 +49,7 @@ struct Vertex {
 };
 
 // using interleaved vertex attrs
-const std::vector<Vertex> vertices = {
+std::vector<Vertex> vertices = {
     {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
     {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
     {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
@@ -928,11 +929,15 @@ private:
 
         void* data;
         vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+            srand(time(NULL));
+            float x=(0.5+(1-2*(float)rand()/(float)RAND_MAX));
+            float y=(0.-(float)rand()/(float)RAND_MAX);
+            std::cout<<"x="<<x<<" y="<<y<<std::endl;
+            vertices[0]={{x, y}, {1.0f, 1.0f, 1.0f}};
             memcpy(data, vertices.data(), (size_t) bufferInfo.size);
         vkUnmapMemory(device, vertexBufferMemory);
         //below @recordCommandBuffer() we will bind the vertextBuffer
     }//11.5
-
     //Command Buffer (alloc from cmd pool)
     void createCommandBuffers() {
         commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -998,7 +1003,7 @@ private:
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
+            
             VkBuffer vertexBuffers[] = {vertexBuffer};
             VkDeviceSize offsets[] = {0};
             vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -1031,6 +1036,9 @@ private:
     }//14c
     void drawFrame(){
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+
+        //now acquire img from swapchain
+        //imageIndex ~ swapchain img that has become available from swapChainImages array -> use to pick framebuffer
         uint32_t imageIndex;
         VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -1039,20 +1047,10 @@ private:
         } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
             throw std::runtime_error("failed to acquire swap chain image!");
         }
-        // Only reset the fence if we are submitting work
         vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
-        //now acquire img from swapchain
-        //imageIndex ~ swapchain img that has become available from swapChainImages array -> use to pick framebuffer
-        //vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-        result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-            recreateSwapChain();
-            return;
-        } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            throw std::runtime_error("failed to acquire swap chain image!");
-        }
         //ready to record the command buffer
+        std::cout<<"Tick "<<currentFrame<<std::endl;
         vkResetCommandBuffer(commandBuffers[currentFrame],  0);
         recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 

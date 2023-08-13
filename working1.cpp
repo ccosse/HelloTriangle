@@ -900,6 +900,7 @@ private:
         }
     }//14c
     void drawFrame(){
+        //std::cout<<"Tick"<<std::endl;
         vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
         vkResetFences(device, 1, &inFlightFence);
         //now acquire img from swapchain
