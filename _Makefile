@@ -1,7 +1,8 @@
 CFLAGS = -std=c++17 -O2
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
+STB_INCLUDE_PATH = /home/charlie/VoidStar/stb
 VulkanTest: main.cpp
-	g++ $(CFLAGS) -o VulkanTest main.cpp $(LDFLAGS)
+	g++ $(CFLAGS) -o VulkanTest main.cpp  -I$(STB_INCLUDE_PATH) $(LDFLAGS)
 
 .PHONY: test clean
 
