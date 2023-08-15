@@ -1043,8 +1043,8 @@ private:
         vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
             /*
             srand(clock());
-            float x=(-0.5 + 0.2*sin(.01*((float)clock()-(float)t0)/(float)t0));
-            float y=(-0.5 + 0.2*cos(.01*((float)clock()-(float)t0)/(float)t0));
+            float x=(-0.5 + 0.5*sin(.01*((float)clock()-(float)t0)/(float)t0));
+            float y=(-0.5 + 0.5*cos(.01*((float)clock()-(float)t0)/(float)t0));
             vertices[0]={
                 {x, y}, 
                 {
@@ -1294,9 +1294,9 @@ private:
         updateUniformBuffer(currentFrame);
         vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
-        //ready to record the command buffer
+        // ready to record the command buffer
         // std::cout<<"Tick "<<clock()<<std::endl;
-        //createVertexBuffer();
+        // createVertexBuffer();
         vkResetCommandBuffer(commandBuffers[currentFrame],  0);
         recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 

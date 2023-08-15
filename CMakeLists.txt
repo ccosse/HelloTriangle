@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(
   "/usr/include/vulkan/" 
   "/usr/include/"
+  "/usr/include/stb"
 )
 
 FIND_LIBRARY(VULKAN NAMES vulkan)
